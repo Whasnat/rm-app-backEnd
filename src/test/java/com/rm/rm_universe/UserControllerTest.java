@@ -2,8 +2,12 @@ package com.rm.rm_universe;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.rm.rm_universe.user.User;
+import com.rm.rm_universe.user.UserRepository;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -15,19 +19,46 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserControllerTest {
+
+
+    public static final String API_1_O_USERS = "/api/1.o/users";
 
     @Autowired
     TestRestTemplate testRestTemplate;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @Before
+    public void cleanup(){
+        userRepository.deleteAll();
+    }
     @Test
-    public void postUser_whenUserIsValid(){
+    public void postUser_whenUserIsValid_receiveOk(){
+        User user = createValidUser();
+
+        ResponseEntity<Object> response = testRestTemplate.postForEntity(API_1_O_USERS,user, Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    private User createValidUser() {
         User user = new User();
         user.setUsername("test_user");
         user.setDisplayName("Test User");
         user.setPassword("test123");
-
-        ResponseEntity<Object> response = testRestTemplate.postForEntity("/api/1.o/users",user, Object.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        return user;
     }
+
+    @Test
+    public void postUser_whenUserIsValid_userSavedToDatabase(){
+        User user =  createValidUser();
+        testRestTemplate.postForEntity(API_1_O_USERS,user, Object.class);
+
+        assertThat(userRepository.count()).isEqualTo(1);
+
+    }
+
+
 }
