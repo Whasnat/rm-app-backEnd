@@ -1,5 +1,4 @@
 package com.rm.rm_universe;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import com.rm.rm_universe.user.User;
 import com.rm.rm_universe.user.UserRepository;
@@ -15,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -39,7 +40,7 @@ public class UserControllerTest {
     public void postUser_whenUserIsValid_receiveOk(){
         User user = createValidUser();
 
-        ResponseEntity<Object> response = testRestTemplate.postForEntity(API_1_O_USERS,user, Object.class);
+        ResponseEntity<Object> response = testRestTemplate.postForEntity(API_1_O_USERS, user, Object.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -52,9 +53,17 @@ public class UserControllerTest {
     }
 
     @Test
-    public void postUser_whenUserIsValid_userSavedToDatabase(){
-        User user =  createValidUser();
-        testRestTemplate.postForEntity(API_1_O_USERS,user, Object.class);
+    public void postUser_whenUserIsValid_receiveSuccessMessage() {
+        User user = createValidUser();
+
+        ResponseEntity<Object> response = testRestTemplate.postForEntity(API_1_O_USERS, user, Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void postUser_whenUserIsValid_userSavedToDatabase() {
+        User user = createValidUser();
+        testRestTemplate.postForEntity(API_1_O_USERS, user, Object.class);
 
         assertThat(userRepository.count()).isEqualTo(1);
 
