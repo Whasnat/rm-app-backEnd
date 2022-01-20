@@ -1,5 +1,6 @@
 package com.rm.rm_universe;
 
+import com.rm.rm_universe.shared.GenericResponse;
 import com.rm.rm_universe.user.User;
 import com.rm.rm_universe.user.UserRepository;
 import org.junit.Before;
@@ -24,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UserControllerTest {
 
 
-    public static final String API_1_O_USERS = "/api/1.o/users";
+    public static final String API_1_O_USERS = "/api/1.0/users";
 
     @Autowired
     TestRestTemplate testRestTemplate;
@@ -56,8 +57,8 @@ public class UserControllerTest {
     public void postUser_whenUserIsValid_receiveSuccessMessage() {
         User user = createValidUser();
 
-        ResponseEntity<Object> response = testRestTemplate.postForEntity(API_1_O_USERS, user, Object.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        ResponseEntity<GenericResponse> response = testRestTemplate.postForEntity(API_1_O_USERS, user, GenericResponse.class);
+        assertThat(response.getBody().getMessage()).isNotNull();
     }
 
     @Test
