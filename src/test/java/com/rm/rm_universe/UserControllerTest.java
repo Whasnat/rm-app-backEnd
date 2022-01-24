@@ -67,7 +67,6 @@ public class UserControllerTest {
         testRestTemplate.postForEntity(API_1_O_USERS, user, Object.class);
 
         assertThat(userRepository.count()).isEqualTo(1);
-
     }
 
 
