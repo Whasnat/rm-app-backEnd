@@ -36,14 +36,15 @@ public class UserControllerTest {
     UserRepository userRepository;
 
     @Before
-    public void cleanup(){
+    public void cleanup() {
         userRepository.deleteAll();
     }
+
     @Test
-    public void postUser_whenUserIsValid_receiveOk(){
+    public void postUser_whenUserIsValid_receiveOk() {
         User user = createValidUser();
 
-        ResponseEntity<Object> response = testRestTemplate.postForEntity(API_1_O_USERS, user, Object.class);
+        ResponseEntity<Object> response = postSignup(user, Object.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -55,28 +56,42 @@ public class UserControllerTest {
         return user;
     }
 
+    public <T> ResponseEntity<T> postSignup(Object request, Class<T> response) {
+        return testRestTemplate.postForEntity(API_1_O_USERS, request, response);
+    }
+
+
     @Test
     public void postUser_whenUserIsValid_receiveSuccessMessage() {
         User user = createValidUser();
 
-        ResponseEntity<GenericResponse> response = testRestTemplate.postForEntity(API_1_O_USERS, user, GenericResponse.class);
+        ResponseEntity<GenericResponse> response = postSignup(user, GenericResponse.class);
         assertThat(response.getBody().getMessage()).isNotNull();
     }
 
     @Test
-    public void postUser_whenUserIsValid_hashPassword(){
+    public void postUser_whenUserIsValid_hashPassword() {
         User user = createValidUser();
-        testRestTemplate.postForEntity(API_1_O_USERS,user, Object.class);
+        testRestTemplate.postForEntity(API_1_O_USERS, user, Object.class);
         List<User> users = userRepository.findAll();
         User inDB = users.get(0);
         assertThat(inDB.getPassword()).isNotEqualTo(user.getPassword());
     }
+
     @Test
     public void postUser_whenUserIsValid_userSavedToDatabase() {
         User user = createValidUser();
         testRestTemplate.postForEntity(API_1_O_USERS, user, Object.class);
 
         assertThat(userRepository.count()).isEqualTo(1);
+    }
+
+    @Test
+    public void postUser_whenUserHasNullUsername_receiveBadRequest() {
+        User user = createValidUser();
+        user.setUsername(null);
+        ResponseEntity<Object> response = postSignup(user, Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
 
