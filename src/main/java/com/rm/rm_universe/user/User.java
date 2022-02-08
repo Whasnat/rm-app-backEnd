@@ -1,5 +1,6 @@
 package com.rm.rm_universe.user;
 
+import com.sun.istack.NotNull;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -13,8 +14,12 @@ public class User {
     @GeneratedValue
     private long id;
 
+    @NotNull
     private String username;
+
+    @NotNull
     private String displayName;
+
     private String password;
 
 }

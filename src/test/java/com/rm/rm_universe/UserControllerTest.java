@@ -95,4 +95,19 @@ public class UserControllerTest {
     }
 
 
+    @Test
+    public void postUser_whenUserHasNullDisplayName_receiveBadRequest() {
+        User user = createValidUser();
+        user.setDisplayName(null);
+        ResponseEntity<Object> response = postSignup(user, Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+
+    @Test
+    public void postUser_whenUserIsValid() {
+
+    }
+
+
 }
